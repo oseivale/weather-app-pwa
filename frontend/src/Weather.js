@@ -59,30 +59,80 @@ const Weather = () => {
   //     }
   // };
 
-  async function subscribeUserToPush() {
-    try {
-      const location = await getUserLocation();
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
-      });
-      const response = await handleSubscriptionRequest(subscription, {
-        lat: location.coords.latitude,
-        lon: location.coords.longitude,
-      });
-      console.log('-x-x-x-response', response)
+//   async function subscribeUserToPush() {
+//     try {
+//       const location = await getUserLocation();
+//       const registration = await navigator.serviceWorker.ready;
+//       const subscription = await registration.pushManager.subscribe({
+//         userVisibleOnly: true,
+//         applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+//       });
+//       const response = await handleSubscriptionRequest(subscription, {
+//         lat: location.coords.latitude,
+//         lon: location.coords.longitude,
+//       });
+//       console.log('-x-x-x-response', response)
 
-      if (response.status === "success") {
+//       if (response.status === "success") {
        
-        setStatus("Subscribed successfully!");
-        alert(status)
-      }
+//         setStatus("Subscribed successfully!");
+//         alert(status)
+//       }
+//     } catch (error) {
+//       console.error("Error subscribing:", error);
+//       setStatus("Failed to subscribe.");
+//     }
+//   }
+
+async function subscribeUserToPush() {
+    try {
+        // Check if the service worker and push are supported
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+            alert('Push notifications are not supported by your browser.');
+            return;
+        }
+
+        // Attempt to get the user's location
+        const location = await getUserLocation();
+
+        // Ensure the service worker is ready
+        const registration = await navigator.serviceWorker.ready;
+
+        // Check for public VAPID key availability
+        if (!publicVapidKey) {
+            console.error('VAPID key is undefined.');
+            setStatus('Configuration error.');
+            return;
+        }
+
+        // Convert VAPID key and subscribe to push manager
+        const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+        });
+
+        // Send subscription and location data to the backend
+        const response = await handleSubscriptionRequest(subscription, {
+            lat: location.coords.latitude,
+            lon: location.coords.longitude,
+        });
+
+        // Log the response for debugging (consider removing for production)
+        console.log('Subscription response:', response);
+
+        // Check response status and react accordingly
+        if (response.status === "success") {
+            setStatus("Subscribed successfully!");
+            alert("Subscribed successfully!"); // Direct user feedback
+        } else {
+            throw new Error(response.message || "Subscription failed on the server.");
+        }
     } catch (error) {
-      console.error("Error subscribing:", error);
-      setStatus("Failed to subscribe.");
+        console.error("Error subscribing:", error);
+        setStatus(error.message || "Failed to subscribe.");
+        alert(error.message || "Failed to subscribe."); // Direct user feedback
     }
-  }
+}
 
   const handleInputChange = (e) => {
     setCity(e.target.value);
@@ -156,3 +206,8 @@ const Weather = () => {
 };
 
 export default Weather;
+
+
+
+
+
