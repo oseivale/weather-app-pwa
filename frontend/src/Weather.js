@@ -75,6 +75,7 @@ const Weather = () => {
       if (response.status === "success") {
        
         setStatus("Subscribed successfully!");
+        alert(status)
       }
     } catch (error) {
       console.error("Error subscribing:", error);
@@ -131,6 +132,7 @@ const Weather = () => {
               Subscribe for Notifications
             </Button>
           </Form>
+          {status && <Alert variant="danger">{status}</Alert>}
           {error && <Alert variant="danger">{error}</Alert>}
           {weather && (
             <Card className="mt-3">
