@@ -1,7 +1,7 @@
 // src/services/api.js
 
 export async function handleSubscriptionRequest(subscription, location) {
-    const response = await fetch('/api/subscribe', {
+    const response = await fetch('/subscribe', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -9,5 +9,5 @@ export async function handleSubscriptionRequest(subscription, location) {
       body: JSON.stringify({ subscription, location })
     });
     return response.json();
-  }
+}
   
