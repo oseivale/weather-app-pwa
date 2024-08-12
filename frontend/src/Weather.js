@@ -71,6 +71,7 @@ const Weather = () => {
         lat: location.coords.latitude,
         lon: location.coords.longitude,
       });
+      console.log('-x-x-x-response', response)
 
       if (response.status === "success") {
        
