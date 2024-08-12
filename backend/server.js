@@ -3,11 +3,14 @@ const bodyParser = require('body-parser');
 const webPush = require('web-push');
 const https = require('https');
 const fs = require('fs');
+const cors = require('cors');
+
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3080;
 
+app.use(cors());
 // Body parser middleware to parse HTTP body in order to read JSON data
 app.use(bodyParser.json());
 
@@ -30,6 +33,7 @@ app.post('/subscribe', (req, res) => {
   subscriptions.push(subscription);
   res.status(201).json({ message: 'Subscription added.' });
 });
+
 
 // Route to send the notification
 app.post('/notify', (req, res) => {
